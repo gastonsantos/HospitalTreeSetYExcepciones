@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.TreeSet;
 
 public class Administracion {
-	private static Integer cupo =5;
+	private static Integer cupo =4;
 	private String nombre;
 	private TreeSet<Paciente> pacientes;
 	private TreeSet<Medicos> medicos;
@@ -24,21 +24,30 @@ public class Administracion {
 	public Boolean agregoMedicoAStaff (Medicos medico1)throws CantidadSuperadaPacientesEnHospital,NullPointerException{
 		if(medico1.equals(null)){
 			throw new NullPointerException();
-		}
-		if(cupo>=medicos.size()){
+		}else if(cupo<=medicos.size()){
 			throw new CantidadSuperadaPacientesEnHospital();
+			
 		}
-		return medicos.add(medico1);
+		
+		else {
+			return medicos.add(medico1);
+		}
+			
+		
+		
 		
 	}
 	
 	public Boolean agregoPacienteAStaff (Paciente paciente1)throws CantidadSuperadaPacientesEnHospital {
-		if(cupo>=pacientes.size()){
+		if(cupo <= pacientes.size()){
 			throw new CantidadSuperadaPacientesEnHospital();
 		}
 		return pacientes.add(paciente1);
 	}
 	public Boolean agregoConsultorioALista(Consultorio consultorio1){
+		
+		
+		
 		return consultorios.add(consultorio1);
 	}
 	
@@ -55,10 +64,16 @@ public class Administracion {
 	}
 	
 	
-	public Boolean agregoPacienteAConsultorio (Paciente paciente1, Consultorio consultorio1){
+	public Boolean agregoPacienteAConsultorio (Paciente paciente1, Consultorio consultorio1)throws NullPointerException, CupoDeConsultorioLLeno{
 		Paciente pacienteAASignar = Buscarpaciente(paciente1.getDni());
 		Consultorio consultorioAAsignar = BuscarConsultorio(consultorio1);
-		if(pacienteAASignar != null && consultorioAAsignar !=null && consultorio1.getCupo()>consultorio1.contarPacientesEnConsultorio() ){
+		if(pacienteAASignar == null || consultorioAAsignar== null) {
+		throw new NullPointerException();
+		}
+		else if(consultorio1.getCupo()<=consultorio1.getPacientesMedico().size()) {
+			throw new CupoDeConsultorioLLeno();
+		}
+		if(pacienteAASignar != null && consultorioAAsignar !=null){
 			consultorioAAsignar.agregoPaciente(paciente1);
 			return true;
 		}else{
@@ -68,14 +83,15 @@ public class Administracion {
 		
 	}
 	
-	public Paciente Buscarpaciente(Integer dni){
+	public Paciente Buscarpaciente(Integer dni)throws NullPointerException{
 		for(Paciente e: pacientes){
 			if(e.getDni().equals(dni)){
 				return e;
 					
 			}
 		}
-		return null;
+		throw new NullPointerException();
+		//return null;
 	}
 	public Consultorio BuscarConsultorio (Consultorio consul1){
 		for(Consultorio e: consultorios){
